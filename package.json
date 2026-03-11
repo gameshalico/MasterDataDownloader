@@ -1,0 +1,13 @@
+{
+  "name": "com.gameshalico.master-data-downloader",
+  "version": "0.1.0",
+  "displayName": "Master Data Downloader",
+  "description": "Editor tool to download CSV from Google Spreadsheets and run post-process hooks",
+  "unity": "6000.3",
+  "author": {
+    "name": "gameshalico"
+  },
+  "dependencies": {
+    "com.cysharp.unitask": "2.5.10"
+  }
+}
