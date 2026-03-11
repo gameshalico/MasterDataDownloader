@@ -275,10 +275,16 @@ namespace MasterDataDownloader
             RebuildEntryList();
         }
 
-        private async UniTaskVoid DownloadSingleAsync(SheetEntry entry)
+        private void ResetCts()
         {
             _cts?.Cancel();
+            _cts?.Dispose();
             _cts = new CancellationTokenSource();
+        }
+
+        private async UniTaskVoid DownloadSingleAsync(SheetEntry entry)
+        {
+            ResetCts();
 
             try
             {
@@ -307,8 +313,7 @@ namespace MasterDataDownloader
         {
             if (_registry == null) return;
 
-            _cts?.Cancel();
-            _cts = new CancellationTokenSource();
+            ResetCts();
 
             try
             {

@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Reflection;
 using NUnit.Framework;
 
 namespace MasterDataDownloader.Tests
@@ -9,25 +8,10 @@ namespace MasterDataDownloader.Tests
     [TestFixture]
     public sealed class SheetEntryTests
     {
-        private static SheetEntry CreateEntry(string sheetId, string sheetName, string outputPath = "")
-        {
-            var entry = new SheetEntry();
-            SetField(entry, "_sheetId", sheetId);
-            SetField(entry, "_sheetName", sheetName);
-            SetField(entry, "_outputPath", outputPath);
-            return entry;
-        }
-
-        private static void SetField(SheetEntry entry, string fieldName, string value)
-        {
-            var field = typeof(SheetEntry).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)!;
-            field.SetValue(entry, value);
-        }
-
         [Test]
         public void BuildDownloadUrl_ValidEntry_ReturnsCorrectUrl()
         {
-            var entry = CreateEntry("abc123", "Sheet1");
+            var entry = new SheetEntry("abc123", "Sheet1");
 
             var url = entry.BuildDownloadUrl();
 
@@ -38,17 +22,17 @@ namespace MasterDataDownloader.Tests
         [Test]
         public void BuildDownloadUrl_SheetNameWithSpaces_IsUrlEncoded()
         {
-            var entry = CreateEntry("abc123", "My Sheet");
+            var entry = new SheetEntry("abc123", "My Sheet");
 
             var url = entry.BuildDownloadUrl();
 
-            Assert.That(url, Does.Contain("sheet=My+Sheet").Or.Contain("sheet=My%20Sheet"));
+            Assert.That(url, Does.Contain("sheet=My%20Sheet"));
         }
 
         [Test]
         public void BuildDownloadUrl_SheetNameWithJapanese_IsUrlEncoded()
         {
-            var entry = CreateEntry("abc123", "マスタ");
+            var entry = new SheetEntry("abc123", "マスタ");
 
             var url = entry.BuildDownloadUrl();
 
@@ -59,7 +43,7 @@ namespace MasterDataDownloader.Tests
         [Test]
         public void BuildDownloadUrl_EmptySheetId_ThrowsInvalidOperationException()
         {
-            var entry = CreateEntry("", "Sheet1");
+            var entry = new SheetEntry("", "Sheet1");
 
             Assert.Throws<InvalidOperationException>(() => entry.BuildDownloadUrl());
         }
@@ -67,7 +51,7 @@ namespace MasterDataDownloader.Tests
         [Test]
         public void BuildDownloadUrl_NullSheetId_ThrowsInvalidOperationException()
         {
-            var entry = CreateEntry(null!, "Sheet1");
+            var entry = new SheetEntry(null!, "Sheet1");
 
             Assert.Throws<InvalidOperationException>(() => entry.BuildDownloadUrl());
         }
@@ -75,7 +59,7 @@ namespace MasterDataDownloader.Tests
         [Test]
         public void BuildDownloadUrl_EmptySheetName_ThrowsInvalidOperationException()
         {
-            var entry = CreateEntry("abc123", "");
+            var entry = new SheetEntry("abc123", "");
 
             Assert.Throws<InvalidOperationException>(() => entry.BuildDownloadUrl());
         }
@@ -83,7 +67,7 @@ namespace MasterDataDownloader.Tests
         [Test]
         public void BuildDownloadUrl_NullSheetName_ThrowsInvalidOperationException()
         {
-            var entry = CreateEntry("abc123", null!);
+            var entry = new SheetEntry("abc123", null!);
 
             Assert.Throws<InvalidOperationException>(() => entry.BuildDownloadUrl());
         }
@@ -91,7 +75,7 @@ namespace MasterDataDownloader.Tests
         [Test]
         public void Properties_ReturnCorrectValues()
         {
-            var entry = CreateEntry("id1", "name1", "Assets/output.csv");
+            var entry = new SheetEntry("id1", "name1", "Assets/output.csv");
 
             Assert.That(entry.SheetId, Is.EqualTo("id1"));
             Assert.That(entry.SheetName, Is.EqualTo("name1"));

@@ -26,9 +26,10 @@ namespace MasterDataDownloader
                 : Array.Empty<ICsvPostProcessor>();
         }
 
-        public static void ExecuteForPath(string outputPath)
+        public static int ExecuteForPath(string outputPath)
         {
             var processors = GetForPath(outputPath);
+            var failCount = 0;
             foreach (var processor in processors)
             {
                 try
@@ -38,9 +39,12 @@ namespace MasterDataDownloader
                 }
                 catch (Exception e)
                 {
+                    failCount++;
+                    Debug.LogError($"PostProcess failed: {processor.DisplayName} for {outputPath}");
                     Debug.LogException(e);
                 }
             }
+            return failCount;
         }
 
         public static void ClearCache()
